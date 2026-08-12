@@ -72,25 +72,3 @@ nic = {
     pip_name             = "public_ip2"
   }
 }
-
-vms = {
-  vm1 = {
-    vm_name             = "vm-amit"
-    location            = "centralindia"
-    resource_group_name = "rg-amit"
-    nic_name            = "nic11"
-    size                = "Standard_B1s"
-    admin_username      = "adminuser"
-    admin_password      = "Adminuser123"
-  }
-
-  vm2 = {
-    vm_name             = "vm-neeraj"
-    location            = "centralindia"
-    resource_group_name = "rg-amit"
-    nic_name            = "nic22"
-    size                = "Standard_B1s"
-    admin_username      = "adminuser"
-    admin_password      = "Adminuser123"
-  }
-}
