@@ -79,7 +79,7 @@ vms = {
     location            = "centralindia"
     resource_group_name = "rg-amit"
     nic_name            = "nic11"
-    size                = "Standard_D2s_v3"
+    size                = "Standard_B2s"
     admin_username      = "adminuser"
     admin_password      = "Adminuser123"
   }
@@ -89,7 +89,7 @@ vms = {
     location            = "centralindia"
     resource_group_name = "rg-amit"
     nic_name            = "nic22"
-    size                = "Standard_D2s_v3"
+    size                = "Standard_B2s"
     admin_username      = "adminuser"
     admin_password      = "Adminuser123"
   }
