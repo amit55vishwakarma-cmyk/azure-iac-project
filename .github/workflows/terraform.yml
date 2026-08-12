@@ -19,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: environments/preprod
+        working-directory: parent_module
 
     steps:
       - name: Checkout code
@@ -33,7 +33,7 @@ jobs:
           az login \
             --service-principal \
             --username "7ff64f4f-b262-45cf-9d0d-12ada29b21fb" \
-            --password "1H88Q~Us30HRWPrSbcdtJlHvufBDSpMOIC7p9b.K" \
+            --password "2Q98Q~z1ylAj2dmUbbjZXfk3OR0hAkQCl-mPtbFm" \
             --tenant "5567a211-c5c0-42ff-990b-03aa0d9c9a50"
 
       - name: Set Azure Subscription
@@ -67,7 +67,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: environments/preprod
+        working-directory: parent_module
 
     steps:
       - name: Checkout code
@@ -81,7 +81,7 @@ jobs:
           az login \
             --service-principal \
             --username "7ff64f4f-b262-45cf-9d0d-12ada29b21fb" \
-            --password "1H88Q~Us30HRWPrSbcdtJlHvufBDSpMOIC7p9b.K" \
+            --password "2Q98Q~z1ylAj2dmUbbjZXfk3OR0hAkQCl-mPtbFm" \
             --tenant "5567a211-c5c0-42ff-990b-03aa0d9c9a50"
 
       - name: Set Azure Subscription
