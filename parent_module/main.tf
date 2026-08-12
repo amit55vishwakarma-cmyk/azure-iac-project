@@ -27,9 +27,3 @@ module "nic" {
   source     = "../child_module/azurerm_network_interface_card"
   nic        = var.nic
 }
-
-module "vms" {
-  depends_on = [module.nic]
-  source     = "../child_module/azurerm_virtual_machine"
-  vms        = var.vms
-}
