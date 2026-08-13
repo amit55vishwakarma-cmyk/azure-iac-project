@@ -80,9 +80,7 @@ jobs:
       - name: Run TruffleHog
         uses: trufflesecurity/trufflehog@main
         with:
-          path: ./parent_module
-          extra_args: --only-verified
-
+         extra_args: --only-verified
       # ---------------- Setup Infracost ----------------
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
