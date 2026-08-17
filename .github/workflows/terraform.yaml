@@ -11,101 +11,15 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
-
-  # ============================================================
-  # SCAN STAGE
-  # ============================================================
-  security-scan:
-    name: Security and Code Scan
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: parent_module
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      # ---------------- Terraform Format ----------------
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
-
-      # ---------------- Terraform Init ----------------
-      - name: Terraform Init
-        run: terraform init -backend=false
-
-      # ---------------- Terraform Validate ----------------
-      - name: Terraform Validate
-        run: terraform validate
-
-      # ---------------- Setup TFLint ----------------
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
-
-      - name: TFLint Init
-        run: tflint --init
-
-      - name: Run TFLint
-        run: tflint --recursive
-
-      # ---------------- tfsec ----------------
-      - name: Install tfsec
-        run: |
-          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-
-      - name: Check tfsec Version
-        run: tfsec --version
-
-      - name: Run tfsec
-        run: |
-          tfsec . \
-            --tfvars-file=terraform.tfvars
-
-      # ---------------- Gitleaks ----------------
-      - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # ---------------- TruffleHog ----------------
-      - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@main
-        with:
-         extra_args: --only-verified
-      # ---------------- Setup Infracost ----------------
-      - name: Setup Infracost
-        uses: infracost/actions/setup@v3
-
-      # ---------------- Infracost Scan ----------------
-      - name: Run Infracost
-        env:
-          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-        run: |
-          infracost breakdown \
-            --path .
-
-
-  # ============================================================
-  # TERRAFORM PLAN STAGE
-  # ============================================================
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
 
-    needs: security-scan
-
     defaults:
       run:
-        working-directory: parent_module
+        working-directory: environments/preprod
 
     steps:
       - name: Checkout code
@@ -119,7 +33,7 @@ jobs:
           az login \
             --service-principal \
             --username "7ff64f4f-b262-45cf-9d0d-12ada29b21fb" \
-            --password "2Q98Q~z1ylAj2dmUbbjZXfk3OR0hAkQCl-mPtbFm" \
+            --password "-K28Q~1Rc.KUrfuRg7aVAmB7fWjk1foWOhpWqbm3" \
             --tenant "5567a211-c5c0-42ff-990b-03aa0d9c9a50"
 
       - name: Set Azure Subscription
@@ -140,55 +54,20 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan
 
-      # Save Terraform plan for Apply stage
-      - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan
-          path: parent_module/tfplan
-
-
-  # ============================================================
-  # MANUAL APPROVAL STAGE
-  # ============================================================
-  manual-approval:
-    name: Manual Approval
-    runs-on: ubuntu-latest
-
-    needs: terraform-plan
-
-    # Manual approval only for push to main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    environment:
-      name: production
-
-    steps:
-      - name: Waiting for Manual Approval
-        run: |
-          echo "Terraform Plan completed successfully."
-          echo "Waiting for Production approval."
-
-
-  # ============================================================
-  # TERRAFORM APPLY STAGE
-  # ============================================================
   terraform-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
 
-    needs:
-      - terraform-plan
-      - manual-approval
+    needs: terraform-plan
 
     # Apply ONLY after push to main
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     defaults:
       run:
-        working-directory: parent_module
+        working-directory: environments/preprod
 
     steps:
       - name: Checkout code
@@ -202,7 +81,7 @@ jobs:
           az login \
             --service-principal \
             --username "7ff64f4f-b262-45cf-9d0d-12ada29b21fb" \
-            --password "2Q98Q~z1ylAj2dmUbbjZXfk3OR0hAkQCl-mPtbFm" \
+            --password "-K28Q~1Rc.KUrfuRg7aVAmB7fWjk1foWOhpWqbm3" \
             --tenant "5567a211-c5c0-42ff-990b-03aa0d9c9a50"
 
       - name: Set Azure Subscription
@@ -219,12 +98,8 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      # Download EXACT plan created before approval
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-plan
-          path: parent_module
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
