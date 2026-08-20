@@ -11,7 +11,7 @@ rgs = {
     name     = "rg-shaymu"
     location = "centralindia"
   }
-  rg3 = {
+  rg4 = {
     name     = "rg-donu"
     location = "centralindia"
   }
